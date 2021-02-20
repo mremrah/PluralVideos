@@ -114,7 +114,24 @@ namespace PluralVideos
         {
             Utils.WriteGreenText($"\n[{DateTime.Now.ToShortDateString()}-{DateTime.Now.ToLongTimeString()}] - [{e.DownloadedClips}/{e.TotalClips}] {e.CourseHeader.Name} - {e.ModuleId}. {e.ModuleTitle}");
             if (e.Succeeded)
-                Utils.WriteText($"\t\t{e.ClipId}. {e.ClipTitle}  --  downloaded {e.Duration} ms, {e.TotalSize / 1024} KB");
+            {
+                int duration = e.Duration;
+                if (duration <= 0)
+                {
+                    duration = 1000;
+                }
+
+                int second = duration / 1000;
+                if (second > 60)
+                {
+                    second = second - 60;
+                }
+                int minute = second / 60;
+                int hour = minute / 60;
+                float baudrate = (e.TotalSize / 1024) / (duration / 1000);
+
+                Utils.WriteText($"\t\t{e.ClipId}. {e.ClipTitle}  --  downloaded in (HH:mm:ss.ms) {hour}:{minute}:{second}.{e.Duration}, {e.TotalSize / 1024} KB ({baudrate} / KBps)");
+            }
             else
             {
                 Utils.WriteRedText($"\t\t{e.ClipId}. {e.ClipTitle} --  Download failed. will retry again.");

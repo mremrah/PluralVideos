@@ -56,6 +56,7 @@ namespace PluralVideos.Services
         private readonly ConcurrentQueue<DownloadClient> clients = new ConcurrentQueue<DownloadClient>();
 
         public EventHandler<DownloadEventArgs> ProcessCompleteEvent;
+
         public EventHandler<string> FileAlreadyDownloadedEvent;
 
         public TaskQueue()
@@ -101,11 +102,9 @@ namespace PluralVideos.Services
                     {
                         try
                         {
-                            int start = Environment.TickCount;
                             var (completed, duration, totalSize, error) = await client.Download();
                             if (completed && error == null)
                             {
-                                Interlocked.Exchange(ref duration, Environment.TickCount - start);
                                 Interlocked.Add(ref downloadDuration, duration);
                                 Interlocked.Add(ref downloadedBytes, totalSize);
                                 Interlocked.Increment(ref downloadedClips);

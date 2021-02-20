@@ -46,20 +46,17 @@ namespace PluralVideos.Services.Video
             int totalSize = 0;
             int duration = 0;
             ApiError error = null;
-
+            duration = Environment.TickCount;
             foreach (var item in clipsResponse.Data.RankedOptions)
             {
                 var head = await HeadHttp(item.Url);
                 if (!head.Success)
                     continue;
 
-                //var filePath = DownloadFileHelper.GetVideoPath(outputPath, course.Title, ModuleId, ModuleTitle, Clip);
                 using var fs = DownloadFileHelper.CreateFile(FilePath);
-                duration = Environment.TickCount;
                 var response = await GetFile(item.Url);
                 if (response.Success)
                 {
-                    duration = Environment.TickCount - duration;
                     var buffer = new byte[4096 * 1024];
                     int read;
                     while ((read = await response.Data.ReadAsync(buffer, 0, buffer.Length)) != 0)
@@ -78,6 +75,7 @@ namespace PluralVideos.Services.Video
                 }
             }
 
+            duration = Environment.TickCount - duration;
             return (completed, duration, totalSize, error);
         }
 

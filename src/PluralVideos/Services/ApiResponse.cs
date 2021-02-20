@@ -66,7 +66,6 @@ namespace PluralVideos.Services
             var response = new ApiResponse<T>
             {
                 Message = message,
-                Duration = duration,
                 ResponseBody = await message.Content.ReadAsStringAsync()
             };
 
@@ -85,7 +84,7 @@ namespace PluralVideos.Services
 
     public class ApiFile : ApiResponse<Stream>
     {
-        public new static async Task<ApiFile> FromMessage(HttpResponseMessage message, int duration = 0)
+        public static async Task<ApiFile> FromMessage(HttpResponseMessage message, int duration = 0)
         {
             var response = new ApiFile
             {
