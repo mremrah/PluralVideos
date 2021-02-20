@@ -45,11 +45,5 @@ namespace PluralVideos.Helpers
         }
 
         private static string CoursePath(string coursesPath, string courseName) => $@"{coursesPath}\{courseName}";
-
-        private static string RemoveInvalidCharacter(this string value)
-        {
-            var illegalInFileName = new Regex(@"[\\/:*?""<>|]");
-            return illegalInFileName.Replace(value.Trim(), "");
-        }
     }
 }

@@ -67,7 +67,7 @@ namespace PluralVideos.Helpers
             return file.Exists ? file.OpenWrite() : file.Create();
         }
 
-        private static string RemoveInvalidCharacter(this string value)
+        public static string RemoveInvalidCharacter(this string value)
         {
             var illegalInFileName = new Regex(@"[\\/:*?""<>|]");
             return illegalInFileName.Replace(value.Trim(), "");

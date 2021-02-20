@@ -15,6 +15,9 @@ namespace PluralVideos.Services
 
         public ApiError Error { get; set; }
 
+        public int Duration { get; set; }
+
+        public int FileSize => ResponseBody?.Length ?? 0;
 
         public static async Task<ApiResponse> FromMessage(HttpResponseMessage message)
         {
@@ -63,13 +66,18 @@ namespace PluralVideos.Services
             var response = new ApiResponse<T>
             {
                 Message = message,
+                Duration = duration,
                 ResponseBody = await message.Content.ReadAsStringAsync()
             };
 
             if (message.IsSuccessStatusCode)
-                response.Data = JsonConvert.DeserializeObject<T>(response.ResponseBody);
+            {
+                response.Data = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(response.ResponseBody);
+            }
             else
+            {
                 response.HandleFailedCall();
+            }
 
             return response;
         }
@@ -77,11 +85,12 @@ namespace PluralVideos.Services
 
     public class ApiFile : ApiResponse<Stream>
     {
-        public new static async Task<ApiFile> FromMessage(HttpResponseMessage message)
+        public new static async Task<ApiFile> FromMessage(HttpResponseMessage message, int duration = 0)
         {
             var response = new ApiFile
             {
                 Message = message,
+                Duration = duration
             };
 
             if (message.IsSuccessStatusCode)

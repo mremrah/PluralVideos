@@ -44,7 +44,8 @@ namespace PluralVideos.Services
 
         protected async Task<ApiFile> GetFile(string url)
         {
-            return await SendHttpFile(() => new HttpRequestMessage(HttpMethod.Get, url));
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            return await SendHttpFile(() => request);
         }
 
         private async Task<ApiResponse> SendHttp(Func<HttpRequestMessage> requestFunc, bool requiresAuthentication)
@@ -84,7 +85,7 @@ namespace PluralVideos.Services
                 if (requiresAuthentication)
                     await SetAuthHeader(request, false);
 
-                var response = await httpClient.SendAsync(request);
+                var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 
                 if (requiresAuthentication && response.StatusCode == HttpStatusCode.Unauthorized)
                 {
@@ -106,15 +107,20 @@ namespace PluralVideos.Services
 
         private async Task<ApiFile> SendHttpFile(Func<HttpRequestMessage> requestFunc)
         {
+            var request = requestFunc();
+            HttpResponseMessage response = null;
             try
             {
-                var request = requestFunc();
-                var response = await httpClient.SendAsync(request);
+                int startTime = Environment.TickCount;
+                response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                int duration = Environment.TickCount - startTime;
+                response.EnsureSuccessStatusCode();
 
-                return await ApiFile.FromMessage(response);
+                return await ApiFile.FromMessage(response, duration);
             }
             catch (Exception ex)
             {
+                response?.Dispose();
                 return new ApiFile()
                 {
                     Error = new ApiError { Message = GetRecursiveErrorMessage(ex) }
