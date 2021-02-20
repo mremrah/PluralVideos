@@ -121,16 +121,12 @@ namespace PluralVideos
                     duration = 1000;
                 }
 
-                int second = duration / 1000;
-                if (second > 60)
-                {
-                    second = second - 60;
-                }
-                int minute = second / 60;
-                int hour = minute / 60;
+                int seconds = duration / 1000;
+                int second =  seconds > 60 ? seconds % 60 : seconds;
+                int minute = seconds / 60;
                 float baudrate = (e.TotalSize / 1024) / (duration / 1000);
 
-                Utils.WriteText($"\t\t{e.ClipId}. {e.ClipTitle}  --  downloaded in (HH:mm:ss.ms) {hour}:{minute}:{second}.{e.Duration}, {e.TotalSize / 1024} KB ({baudrate} / KBps)");
+                Utils.WriteText($"\t\t{e.ClipId}. {e.ClipTitle}  --  downloaded in (HH:mm:ss.ms) {minute}:{second}.{duration}, {e.TotalSize / 1024} KB ({baudrate}/KBps)");
             }
             else
             {

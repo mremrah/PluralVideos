@@ -92,8 +92,8 @@ namespace PluralVideos.Services
 
                     if (completedFiles != null && completedFiles.Contains(client.FilePath))
                     {
-                        OnFileAlreadyDownloadedEvent(client.FilePath);
                         downloadedClips++;
+                        OnFileAlreadyDownloadedEvent($"{downloadedClips} - {client.FilePath}");
                         continue;
                     }
 

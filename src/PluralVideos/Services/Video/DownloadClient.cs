@@ -44,9 +44,8 @@ namespace PluralVideos.Services.Video
 
             var completed = false;
             int totalSize = 0;
-            int duration = 0;
             ApiError error = null;
-            duration = Environment.TickCount;
+            int duration = Environment.TickCount;
             foreach (var item in clipsResponse.Data.RankedOptions)
             {
                 var head = await HeadHttp(item.Url);
